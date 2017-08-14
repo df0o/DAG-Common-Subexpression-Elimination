@@ -1,0 +1,249 @@
+\documentclass[12pt]{article}
+
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+
+\usepackage[utf8]{inputenc}
+\usepackage{synttree}
+\usepackage[rounded]{syntax}
+\usepackage[letterpaper, landscape, margin=1in]{geometry}
+
+\title{CS 4TB3
+\\\vspace{10mm}
+\large \textbf{Assignment 2}
+\vspace{40mm}
+}
+\author{
+	Maxim Vasiliev \#400043983\\
+	Susie Yu \#000955758 }
+\date{January 19 2017}
+
+\begin{document}
+\maketitle
+	\newpage
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\section{Question 1}
+\subsection{compound_stmt}
+\begin{grammar}
+<compound_stmt> ::= \[[
+	\begin{stack} 'if_stmt' \\ 
+	'while_stmt' \\
+	'for_stmt' \\
+	'try_stmt' \\
+	'with_stmt' \\
+	'funcdef' \\
+	'classdef' \\
+	'async_with_stmt' \\
+	'async_for_stmt' \\
+	'async_funcdef'
+	\end{stack}
+\]]
+\end{grammar}
+
+
+\subsubsection{if_stmt}
+\begin{grammar}
+<if_stmt> ::= \[[
+	'if' <expression> ':' <suite>
+	\begin{rep} \\  <suite> ':' <expression> 'elif' \end{rep}
+	\begin{stack} \\ 'else' ':' <suite> \end{stack}
+\]]
+\end{grammar}
+
+
+\subsubsection{while_stmt}
+\begin{grammar}
+<while_stmt> ::= \[[
+	'while' <expression> ':' <suite>
+	\begin{stack} \\ 'else' ':' <suite> \end{stack}
+\]]
+\end{grammar}
+
+
+\subsubsection{for_stmt}
+\begin{grammar}
+<for_stmt> ::= \[[
+	'for' <target_list> 'in' <expression_list> ':' <suite>
+	\begin{stack} \\ 'else' ':' <suite> \end{stack}
+\]]
+\end{grammar}
+
+
+\subsubsection{try_stmt}
+\begin{grammar}
+<try_stmt> ::= \[[ \begin{stack} <try1_stmt> \\ <try2_stmt> \end{stack} \]]
+<try1_stmt> ::= \[[ 
+	'try' ':' <suite>
+	\begin{rep} 'except' \begin{stack}\\<expression>\begin{stack}\\'as' <identifier>\end{stack}\end{stack} ':' <suite> \end{rep}
+	\begin{stack}\\'else' ':' <suite>\end{stack}
+	\begin{stack}\\'finally' ':' <suite>\end{stack}
+\]]
+<try2_stmt> ::= \[['try' ':' <suite> 'finally' ':' <suite> \]]
+\end{grammar}
+
+\subsubsection{with_stmt}
+\begin{grammar}
+<with_stmt> ::= \[[
+	'with' <with_item>
+	\begin{rep} \\ <with_item> ',' \end{rep}
+	':' <suite>
+	\]]
+	
+<with_item> ::= \[[ <expression> \begin{stack}\\'as' <target>\end{stack}  \]]
+\end{grammar}
+
+
+\subsubsection{funcdef}
+\begin{grammar}
+<funcdef> ::= \[[
+	\begin{stack}\\<decorators>\end{stack}
+	'def' <funcname> '(' \begin{stack}\\<parameter_list>\end{stack} ')'
+	\begin{stack}\\'$\to$' <expression> \end{stack} ':' <suite>
+	\]]
+	
+<decorators> ::= \[[ \begin{rep}<decorator>\end{rep} \]]
+	
+<decorator> ::= \[[ '@' <dotted_name> 
+	\begin{stack}\\'(' \begin{stack}\\<argument_list>\begin{stack}\\','\end{stack} \end{stack} ')'\end{stack} 
+	<NEWLINE>\]]
+	
+<dotted_name> ::= \[[
+	<identifier> \begin{rep}\\<identifier> '.' \end{rep}
+	\]]
+	
+<parameter_list> ::= \[[ \begin{stack}
+	<defparameter> \begin{rep}\\<defparameter> ',' \end{rep} \begin{stack}\\','\begin{stack}\\<paramter_list_starargs>\end{stack}\end{stack}
+	
+	\\ <parameter_list_starargs> 
+	\end{stack}
+\]]
+
+<parameter_list_starargs> ::= \[[ \begin{stack}
+	'$*$' \begin{stack}\\<parameter>\end{stack}
+	\begin{rep}\\<defparameter> ',' \end{rep}
+	\begin{stack}\\','\begin{stack}\\'$**$' <parameter>\begin{stack}\\','\end{stack}\end{stack}\end{stack}
+	\\
+	'$**$' <parameter> \begin{stack}\\','\end{stack}
+	\end{stack}
+ \]]
+ 
+<parameter> ::= \[[ <identifier> \begin{stack}\\':'<expression>\end{stack}\]]
+
+<defparameter> ::= \[[ <parameter> \begin{stack}\\'$=$'<expression>\end{stack}\]]
+
+<funcname> ::= \[[<identifier>\]]
+\end{grammar}
+
+
+\subsubsection{classdef}
+\begin{grammar}
+<classdef> ::= \[[ 
+	\begin{stack}\\<decorators>\end{stack} 'class' <classname>
+	\begin{stack}\\<inheritance>\end{stack} ':' <suite>
+\]]
+
+<inheritance> ::= \[[ '(' \begin{stack}\\<argument_list>\end{stack} ')' \]]
+
+<classname> ::= \[[ <identifier> \]]
+\end{grammar}
+
+
+\subsection{suite}
+\begin{grammar}
+<suite> ::= \[[ 
+    \begin{stack}
+    <stmt_list> <NEWLINE> \\
+    <NEWLINE> <INDENT> <statement> '+' <DEDENT>
+    \end{stack}
+\]]
+\end{grammar}
+
+
+\subsection{statement}
+\begin{grammar}
+<statement> ::= \[[ 
+    \begin{stack}
+    <stmt_list> <NEWLINE> \\
+    <compound_stmt>
+    \end{stack}
+\]]
+\end{grammar}
+
+
+\subsection{stmt_list}
+\begin{grammar}
+<stmt_list> ::= \[[ 
+    <simple_stmt> <NEWLINE> 
+     \begin{rep} \\<simple_stmt> ';'\end{rep}
+     \begin{stack} \\ ';' \end{stack}
+\]]
+\end{grammar}
+
+
+\section{Question 2}
+\subsection{(a*b*)*}
+The set of all strings over {a,b}.
+
+\subsection{(a*ba*b)*a*}
+The set of all strings over \{a,b\} where number of b's is even
+
+\subsection{(a*[ba*c])*}
+The set of all strings over \{a,b,c\} where number of b's is equal to number of c's, and where b's and c's, if they occur, occur only alternatingly (no 2 b's or no 2 c's in a row) and beginning with b and ending with c.
+
+\section{Question 3}
+\subsection{bd$|$bc*d and bc*d}
+Equivalent. bd is included in the language of bc*d, so the left expression can be simplified to just bc*d, which is equal to the right expression.
+
+\subsection{ab$|$bd* and [a]bd*}
+NOT equivalent. The right regular expression can match abd, but left cannot.
+
+\subsection{(a$|$ba)* and (a$|$b)*}
+NOT equivalent. Right regular expression can produce b, but left cannot.
+
+\section{Question 4}
+Starting with: \\
+$A \to aA | bB \\
+B \to bB | cB | e $\\[0.4cm]
+Step 1: replace B\\
+$A \to aA | b\{b|c\}$\\[0.4cm]
+Step 2: replace A\\
+$\{a\}(b\{b|c\})$\\[0.5cm]
+Answer: \\
+$\{a\}b\{b|c\}$
+
+
+\section{Question 5}
+S $\to$ A $|$ B $|$ C \\
+A $\to$ aA $|$ e \\
+B $\to$ bB $|$ e \\
+C $\to$ abC $|$ e
+
+
+\section{Question 6}
+
+\subsection{6a}
+S $\to$ cS $|$ aA $|$ e \\
+A $\to$ aA $|$ bA $|$ cA $|$ e 
+\noindent \\[0.3cm]
+EBNF: S ::= $\lbrace$'c'$\rbrace$$\lbrace$ 'a' $\lbrace$ 'a' $|$ 'b' $|$ 'c' $\rbrace$$\rbrace$ \\[0.3cm]
+this grammar is regular and the regular expression is c*(a(a$|$b$|$c)*)*. The right hand sides of EBNF productions without non-terminals are the same as the regular expressions.
+
+
+\subsection{6b}
+S $\to$ aSa $|$ bSb $|$ a $|$ b $|$ e 
+\noindent \\[0.3cm]
+EBNF: S ::= ['a' $<$S$>$ 'a']['b' $<$S$>$ 'b']['a']['b']\\[0.3cm]
+this grammar is not regular because terminals must be added to both sides of the non-terminal S. Also to know what pattern has occurred before the mid point of a infinite palindrome, it would need to keep track of an infinite amount of states. 
+
+
+\subsection{6c}
+S $\to$ aA \\
+A $\to$ aA $|$ aAb $|$ e
+\noindent \\[0.3cm]
+EBNF: S ::= 'a' $<$A$>$ \\
+\tab[1.2cm] A ::= ['a' $<$A$>$]['a' $<$A$>$ 'b'] \\[0.3cm]
+This grammar is not regular because to know that there are more b's than a's, a DFA would need to keep track of the number of a's, forced to add an a whenever it adds a b. Since the language is infinite, this requires an infinite number of states.
+
+\end{document}
